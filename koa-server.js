@@ -2,9 +2,29 @@ const Koa = require('koa');
 const fs = require('fs');
 const Router = require('koa-router');
 const cors = require('@koa/cors');
+const staticServe = require('koa-static');
+const path = require('path');
 
 const app = new Koa();
 const router = new Router();
+
+function configurableSetting (config) {
+    return async (ctx, next) => {
+        await next()
+    }
+}
+// response time
+app.use(async (ctx, next) => {
+    const start = Date.now();
+    await next();
+    const timeTakes = Date.now() - start;
+    ctx.set('X-Response-time', `${timeTakes}ms`);
+})
+
+app.use(staticServe(path.join(__dirname, 'public')))
+app.use(configurableSetting({}));
+
+// error catch
 app.use(async (ctx, next)=>{
     try {
         await next();
@@ -16,6 +36,13 @@ app.use(async (ctx, next)=>{
     }
 })
 
+// print log
+app.use(async (ctx, next) => {
+    console.log(`method: ${ctx.method}, url: ${ctx.url}`)
+    await next();
+})
+
+// cors 
 app.use(cors());
 
 router.get('/login', async(ctx, next)=>{

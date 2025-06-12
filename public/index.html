@@ -1,0 +1,36 @@
+<header>
+    <script>
+            const clickFun = async function (event) {
+                const wrapper = document.getElementById('result-area');
+                switch (window.event.target.innerText) {
+                    case 'login':
+                        wrapper.value = JSON.stringify(await getLoginResponse())
+                        break;
+                    case 'getallDate':
+                        wrapper.value = JSON.stringify(await getUserDetailsResponse());
+                        break;
+                    default:
+                        return;
+                }
+            }
+
+            async function getLoginResponse () {
+                const response = await fetch('./login?prId=123&name=Gina');
+                return response.json();
+            }
+
+            async function getUserDetailsResponse () {
+                const response = await fetch('./getAllDetails');
+                return response.json();
+            }
+      </script>
+</header>
+<html>
+    <body>
+        <div id="api-buttons-trigger" onclick="clickFun(this)">
+            <button>login</button>
+            <button>getallDate</button>
+        </div>
+        <textarea name="response" id="result-area" cols="100" rows="30"></textarea>
+    </body>
+</html>
