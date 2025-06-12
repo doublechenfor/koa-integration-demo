@@ -5,6 +5,10 @@ const cors = require('@koa/cors');
 const staticServe = require('koa-static');
 const compose = require('koa-compose');
 const path = require('path');
+const jsonJwt = require('jsonwebtoken');
+const koaJwt = require('koa-jwt');
+
+const SECRECT_STRING = "Gina"
 
 const app = new Koa();
 const router = new Router();
@@ -47,8 +51,17 @@ app.use(async (ctx, next) => {
 // cors 
 app.use(cors());
 
+//JWT token verified
+app.use(koaJwt({
+    secret: SECRECT_STRING,
+    passthrough: ['getJwtToken'],
+}).unless({
+    path: [/^\/public/]
+}))
+
 const middlewareAuth = async (ctx, next) => {
-    if (ctx.header.authorization) {
+    // skip specific methods
+    if (ctx.header.authorization || ctx.path === '/getJwtToken') {
         await next()
     } else {
         ctx.throw(401, 'not authed.')
@@ -56,13 +69,20 @@ const middlewareAuth = async (ctx, next) => {
 }
 
 const  middlewareToken = async (ctx, next) => {
-    if (ctx.header.jwtToken) {
+    if (!ctx.header.jwtToken) {
         await next()
     } else {
         ctx.throw(401, 'you don have access to system.')
     }
 }
 app.use(compose([middlewareAuth, middlewareToken]))
+
+router.get('/getJwtToken', async (ctx, next) => {
+    const { id } = ctx.query;
+    await next();
+    const token = jsonJwt.sign({id}, SECRECT_STRING, {expiresIn: '8h'});
+    ctx.body = { token };
+})
 
 router.get('/login', async(ctx, next)=>{
     console.log('login start...');
@@ -87,13 +107,10 @@ router.get('/getAllDetails', async(ctx, next) => {
     } else {
         ctx.throw(400, 'db fail')
     }
-    console.log('get details end...');
 })
 
 app.use(router.routes()).use(router.allowedMethods());
 app.on('error', (err, ctx)=> {
-    console.log('error');
+    console.log('error', JSON.stringify(err));
 })
-app.listen(8081, ()=> {
-    console.log('Koa starting...')
-})
+app.listen(8081, ()=> {})
