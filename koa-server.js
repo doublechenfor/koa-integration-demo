@@ -3,6 +3,7 @@ const fs = require('fs');
 const Router = require('koa-router');
 const cors = require('@koa/cors');
 const staticServe = require('koa-static');
+const compose = require('koa-compose');
 const path = require('path');
 
 const app = new Koa();
@@ -38,12 +39,30 @@ app.use(async (ctx, next)=>{
 
 // print log
 app.use(async (ctx, next) => {
+    ctx.header.authorization
     console.log(`method: ${ctx.method}, url: ${ctx.url}`)
     await next();
 })
 
 // cors 
 app.use(cors());
+
+const middlewareAuth = async (ctx, next) => {
+    if (ctx.header.authorization) {
+        await next()
+    } else {
+        ctx.throw(401, 'not authed.')
+    }
+}
+
+const  middlewareToken = async (ctx, next) => {
+    if (ctx.header.jwtToken) {
+        await next()
+    } else {
+        ctx.throw(401, 'you don have access to system.')
+    }
+}
+app.use(compose([middlewareAuth, middlewareToken]))
 
 router.get('/login', async(ctx, next)=>{
     console.log('login start...');
