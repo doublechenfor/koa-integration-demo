@@ -75,3 +75,16 @@ fixed: add decode type `await fs.readFileSync('./userInfo.json', 'utf8');`
 
 ##### demo:
 ![vue3+nodejs+redis](./vue3+nodejs+redis.png)
+
+
+
+
+Github Verified:
+error msg: Verify your two-factor authentication (2FA) settings
+
+step1: click `Reconfig 2FA on this account`
+step2: click `Authencator app - Edit`
+step3: click hyperlink `login use passoword` at the bottom of the pop.
+step4: enter your passwork. then you can see the QR code
+step5: Use other mini program or broswer plugin to get the code 
+
