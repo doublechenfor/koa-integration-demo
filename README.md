@@ -53,6 +53,25 @@ RCA: both methods defaulting returns buffer data
 fixed: add decode type `await fs.readFileSync('./userInfo.json', 'utf8');`
 
 
+#### POST request. need `npm i koa-bodyparser`. otherwise can't get the body query
 
 
 
+
+
+
+
+
+### Redis Setup([Redis](https://redis.io/downloads/))
+
+#### <li> download
+#### <li> `make` compile
+#### <li> `make test` compile test(takes time. depends your computer)
+![make test](./redisTest.png)
+#### <li> `make install`
+![installed redis](./redisInstalled.png)
+#### <li> `redis-server`
+#### <li> command start redis-cli `redis-cli`
+
+##### demo:
+![vue3+nodejs+redis](./vue3+nodejs+redis.png)
